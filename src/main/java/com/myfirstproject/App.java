@@ -1,6 +1,14 @@
 package com.myfirstproject;
 
+import com.myfirstproject.dao.PersonDao;
+import com.myfirstproject.service.PersonService;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.hibernate.Session;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.dao.DataAccessException;
 
 /**
  * Hello world!
@@ -9,28 +17,32 @@ import org.hibernate.Session;
 public class App {
 
     public static void main(String[] args) {
-        System.out.println("Maven + Hibernate");
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        User user = new User();
-        
-        
-        user.setName("Jane");
-        user.setSurname("Austen");
-        user.setPosition("writer");
-        user.setSalary(5.5);
-        
-        User user2 = new User();
-        
-        
-        user2.setName("Vasilit");
-        user2.setSurname("AUGUST");
-        user2.setPosition("reader");
-        user2.setSalary(22.8);
-        
-        session.save(user);
-        session.save(user2);
-        session.getTransaction().commit();
+        ClassPathXmlApplicationContext cntxt = new ClassPathXmlApplicationContext("Spring.xml");
+        PersonService personService = cntxt.getBean(PersonService.class);
+        List<Person> persons = new ArrayList<>();
 
+        Person person = new Person();
+        Person person2 = new Person();
+        person.setName("Name");
+        person.setCountry("Belarus");
+        person.setId(3);
+        person2.setId(4);
+
+        persons.add(person);
+        persons.add(person2);
+        try {
+            personService.addAll(Arrays.asList(new Person(13, "vasia", "Belarus"),
+                    new Person(15, "vasia", "Belarus"), new Person(10, "vasia", "Belarus"), new Person(14, "vasia", "Belarus")));
+        } catch (Exception e) {
+            System.out.println("Error");
+        }
+
+        List<Person> list = personService.listAll();
+
+        for (Person p : list) {
+            System.out.println("Person List::" + p);
+        }
+
+        cntxt.close();
     }
 }
